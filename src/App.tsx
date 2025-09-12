@@ -145,7 +145,7 @@ export default function App({
     height: '15vw',
     maxWidth: '20vw',
     maxHeight: '20vw',
-    borderRadius: '3vw',
+    borderRadius: '1vw',
     overflow: 'hidden',
     boxShadow: '0 0 1vw 0.2vw rgba(0,0,0,0.15)',
     zIndex: 1000
@@ -169,11 +169,12 @@ export default function App({
         left: '1vw',
         backgroundColor: 'rgba(15, 15, 15, 0.85)',
         padding: '1vw',
-        borderRadius: '2vw',
+        borderRadius: '1vw',
         boxShadow: '0 0.2vw 0.6vw rgba(0,0,0,0.3)',
         zIndex: 1000,
         pointerEvents: 'auto',
-        width: '22vw'
+        width: '22vw',
+        
       }}>
         <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'bold', fontSize: 'clamp(1vw, 2vw, 1.5vw)', color: 'lightgray'}}>
           Destruction in Gaza stripe
@@ -183,7 +184,7 @@ export default function App({
         </p>
         <img src="/legende.svg" alt="Legend" style={{ display: "block", width: "90%", height: "auto" }} />
         <label>
-          <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '3vw'}}>
+          <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '2vw'}}>
             Changing the size of the density cells
           </p>
           <span style={{ color: 'lightgray', fontWeight: 'normal', marginTop: '0', fontSize: 'clamp(1vw, 1.5vw, 1vw)'}}>Meters: {cellSize}</span>
@@ -198,7 +199,7 @@ export default function App({
               width: '15vw',
               marginTop: '0vw',
               marginLeft: '0.5vw',
-              marginBottom: '2.5vw',
+              marginBottom: '2vw',
               WebkitAppearance: 'none',
               height: '0.8vw',
               borderRadius: '0.5vw',
@@ -209,13 +210,13 @@ export default function App({
             className="custom-slider"
           />
         </label>
-        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '2vw'}}>
+        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '0vw'}}>
           Number of buildings destroyed per municipality
         </p>
         <div style={{ marginTop: '0vw', marginBottom: "-1vw" }}>
           <Graph hoveredMuni={hoveredMuni} onHoverMuni={setHoveredMuni} />
         </div>
-        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'light', fontSize: 'clamp(0.8vw, 1vw, 1vw)', color: 'lightgray' , marginTop: '2vw'}}>
+        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'light', fontSize: 'clamp(0.8vw, 1vw, 0.5vw)', color: 'lightgray' , marginTop: '1vw'}}>
           Source : UNOSAT
         </p>
       </div>
