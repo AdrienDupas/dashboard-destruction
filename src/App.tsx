@@ -177,7 +177,7 @@ export default function App({
         
       }}>
         <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'bold', fontSize: 'clamp(1vw, 2vw, 1.5vw)', color: 'lightgray'}}>
-          Destruction in Gaza stripe
+          Destruction in the Gaza stripe
         </p>
         <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray' }}>
           Number of buildings destroyed per km²
@@ -185,7 +185,7 @@ export default function App({
         <img src="/legende.svg" alt="Legend" style={{ display: "block", width: "90%", height: "auto" }} />
         <label>
           <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '2vw'}}>
-            Changing the size of the density cells
+            Change the size of the density cells
           </p>
           <span style={{ color: 'lightgray', fontWeight: 'normal', marginTop: '0', fontSize: 'clamp(1vw, 1.5vw, 1vw)'}}>Meters: {cellSize}</span>
           <input
