@@ -1,0 +1,40 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.40.5-Bratislava">
+  <identifier>GovGaza_FeatureToPolygon2</identifier>
+  <parentidentifier></parentidentifier>
+  <language>EN</language>
+  <type>dataset</type>
+  <title>GovGaza_FeatureToPolygon2</title>
+  <abstract>West Bank governorates. In the absence of any other identification scheme. GOV ID is MOP consistent Mt Scopus from UNTSO Maps - see Beatrice
+
+Internally consistent with Geo_PoliticalBoundary datasets
+
+developed by CP</abstract>
+  <keywords vocabulary="gmd:topicCategory">
+    <keyword>REQUIRED: Common-use word or phrase used to describe the subject of the data set.</keyword>
+  </keywords>
+  <links>
+    <link name="Shapefile" type="Local Area Network" url="file://\\192.168.1.3\Gis$\filing\GIS\GIS_Data\Gaza.mdb" format="" description="" size="" mimeType=""/>
+  </links>
+  <dates/>
+  <fees></fees>
+  <constraints type="Accès">REQUIRED: Restrictions and legal prerequisites for accessing the data set.</constraints>
+  <rights>REQUIRED: Restrictions and legal prerequisites for using the data set after access is granted.</rights>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys nativeFormat="Wkt">
+      <wkt></wkt>
+      <proj4></proj4>
+      <srsid>0</srsid>
+      <srid>0</srid>
+      <authid></authid>
+      <description></description>
+      <projectionacronym></projectionacronym>
+      <ellipsoidacronym></ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial minx="75628.91400000000430737" miny="70694.44599999999627471" maxz="0" maxx="204249.6969999999855645" minz="0" dimensions="2" crs="EPSG:4326" maxy="217546.30999999999767169"/>
+  </extent>
+</qgis>
