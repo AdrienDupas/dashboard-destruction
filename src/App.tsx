@@ -45,15 +45,17 @@ export default function App({
   const [muniData, setMuniData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [cellSize, setCellSize] = useState(110);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  const [hoveredMuni, setHoveredMuni] = useState<string | null>(null);
+  const [hoverInfo, setHoverInfo] = useState<{ name: string | null; x: number; y: number }>({ name: null, x: 0, y: 0 });
 
   useEffect(() => {
     fetch(DATA_URL)
       .then(res => res.json())
-      .then(json => setGeoData({
-        type: 'FeatureCollection',
-        features: json.features.filter((f: GeoJSON.Feature) => f.geometry?.type === 'Point')
-      }))
+      .then(json =>
+        setGeoData({
+          type: 'FeatureCollection',
+          features: json.features.filter((f: GeoJSON.Feature) => f.geometry?.type === 'Point')
+        })
+      )
       .catch(console.error);
   }, []);
 
@@ -64,12 +66,15 @@ export default function App({
       .catch(console.error);
   }, []);
 
-  const onViewStateChange = useCallback(({ viewState: newView }: any) => {
-    setViewState({
-      main: newView,
-      minimap: { ...viewState.minimap, longitude: newView.longitude, latitude: newView.latitude }
-    });
-  }, [viewState.minimap]);
+  const onViewStateChange = useCallback(
+    ({ viewState: newView }: any) => {
+      setViewState({
+        main: newView,
+        minimap: { ...viewState.minimap, longitude: newView.longitude, latitude: newView.latitude }
+      });
+    },
+    [viewState.minimap]
+  );
 
   if (!geoData) return <div>Chargement...</div>;
 
@@ -94,24 +99,31 @@ export default function App({
       contours: lineContours,
       cellSize
     }),
-    muniData && new GeoJsonLayer({
-      id: 'muni-layer',
-      data: muniData,
-      pickable: true,
-      stroked: true,
-      filled: true,
-      lineWidthMinPixels: 2,
-      getLineColor: [70, 70, 70],
-      getLineWidth: 6,
-      getFillColor: (f: any) => {
-        const geoName = (f.properties?.NAME || '').replace(/"/g, '').trim().toLowerCase();
-        const hovered = (hoveredMuni || '').replace(/"/g, '').trim().toLowerCase();
-        return hovered && geoName === hovered ? [255, 255, 255, 150] : [255, 0, 0, 0];
-      },
-      updateTriggers: { getFillColor: [hoveredMuni] },
-      onHover: info => setHoveredMuni(info?.object?.properties?.NAME || null),
-      worker: false
-    })
+    muniData &&
+      new GeoJsonLayer({
+        id: 'muni-layer',
+        data: muniData,
+        pickable: true,
+        stroked: true,
+        filled: true,
+        lineWidthMinPixels: 2,
+        getLineColor: [70, 70, 70],
+        getLineWidth: 6,
+        getFillColor: (f: any) => {
+          const geoName = (f.properties?.NAME || '').replace(/"/g, '').trim().toLowerCase();
+          const hovered = (hoverInfo.name || '').replace(/"/g, '').trim().toLowerCase();
+          return hovered && geoName === hovered ? [255, 255, 255, 150] : [255, 0, 0, 0];
+        },
+        updateTriggers: { getFillColor: [hoverInfo.name] },
+        onHover: info => {
+          if (info.object) {
+            setHoverInfo({ name: info.object.properties.NAME, x: info.x, y: info.y });
+          } else {
+            setHoverInfo({ name: null, x: 0, y: 0 });
+          }
+        },
+        worker: false
+      })
   ].filter(Boolean);
 
   const minimapLayers = [
@@ -125,27 +137,26 @@ export default function App({
       contours,
       cellSize
     }),
-    muniData && new GeoJsonLayer({
-      id: 'muni-mini',
-      data: muniData,
-      pickable: false,
-      stroked: true,
-      filled: true,
-      getLineColor: [70, 70, 70],
-      getLineWidth: 1,
-      getFillColor: [0, 0, 0, 0]
-    })
+    muniData &&
+      new GeoJsonLayer({
+        id: 'muni-mini',
+        data: muniData,
+        pickable: false,
+        stroked: true,
+        filled: true,
+        getLineColor: [70, 70, 70],
+        getLineWidth: 1,
+        getFillColor: [0, 0, 0, 0]
+      })
   ].filter(Boolean);
 
   const minimapStyle: React.CSSProperties = {
     position: 'absolute',
     bottom: '2%',
     right: '2%',
-    width: '15vw',
-    height: '15vw',
-    maxWidth: '20vw',
-    maxHeight: '20vw',
-    borderRadius: '1vw',
+    width: 'clamp(180px, 15vw, 320px)',
+    height: 'clamp(180px, 15vw, 320px)',
+    borderRadius: 'clamp(6px,1vw,18px)',
     overflow: 'hidden',
     boxShadow: '0 0 1vw 0.2vw rgba(0,0,0,0.15)',
     zIndex: 1000
@@ -153,41 +164,91 @@ export default function App({
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-      <DeckGL
-        layers={layers}
-        initialViewState={viewState.main}
-        controller={true}
-        onViewStateChange={onViewStateChange}
-      >
+      <DeckGL layers={layers} initialViewState={viewState.main} controller={true} onViewStateChange={onViewStateChange}>
         <Map reuseMaps mapStyle={mapStyle} />
       </DeckGL>
 
+      {/* Tooltip muni */}
+      {hoverInfo.name && (
+        <div
+          style={{
+            position: 'absolute',
+            pointerEvents: 'none',
+            left: hoverInfo.x + 0,
+            top: hoverInfo.y + 0,
+            backgroundColor: 'rgba(47, 48, 51, 1)',
+            color: 'rgba(255, 255, 255, 1)',
+            padding: '8px 14px',
+            borderRadius: '0px',
+            fontFamily: 'Open Sans, sans-serif',
+            fontWeight: 'bold',
+            fontSize: '1.7vh',
+            zIndex: 2000
+          }}
+        >
+          {hoverInfo.name}
+        </div>
+      )}
+
       {/* Sidebar */}
-      <div style={{
-        position: 'absolute',
-        top: '1vw',
-        left: '1vw',
-        backgroundColor: 'rgba(15, 15, 15, 0.85)',
-        padding: '1vw',
-        borderRadius: '1vw',
-        boxShadow: '0 0.2vw 0.6vw rgba(0,0,0,0.3)',
-        zIndex: 1000,
-        pointerEvents: 'auto',
-        width: '22vw',
-        
-      }}>
-        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'bold', fontSize: 'clamp(1vw, 2vw, 1.5vw)', color: 'lightgray'}}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '1vw',
+          left: '1vw',
+          backgroundColor: 'rgba(15, 15, 15, 0.85)',
+          padding: 'clamp(8px,1vw,24px)',
+          borderRadius: 'clamp(6px,1vw,18px)',
+          boxShadow: '0 0.2vw 0.6vw rgba(0,0,0,0.3)',
+          zIndex: 1000,
+          pointerEvents: 'auto',
+          width: 'clamp(260px, 22vw, 480px)',
+          maxHeight: '90vh',
+          overflowY: 'auto'
+        }}
+      >
+        <p
+          style={{
+            fontFamily: 'Open Sans, sans-serif',
+            fontWeight: 'bold',
+            fontSize: 'clamp(14px, 1.5vw, 24px)',
+            color: 'lightgray'
+          }}
+        >
           Destruction in the Gaza stripe
         </p>
-        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray' }}>
+        <p
+          style={{
+            fontFamily: 'Open Sans, sans-serif',
+            fontWeight: 'normal',
+            fontSize: 'clamp(12px, 1.2vw, 18px)',
+            color: 'lightgray'
+          }}
+        >
           Number of buildings destroyed per km²
         </p>
-        <img src="/legende.svg" alt="Legend" style={{ display: "block", width: "90%", height: "auto" }} />
+        <img src="/legende.svg" alt="Legend" style={{ display: 'block', width: '90%', height: 'auto' }} />
         <label>
-          <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '2vw'}}>
+          <p
+            style={{
+              fontFamily: 'Open Sans, sans-serif',
+              fontWeight: 'normal',
+              fontSize: 'clamp(12px, 1.2vw, 18px)',
+              color: 'lightgray',
+              marginTop: '2vw'
+            }}
+          >
             Change the size of the density cells
           </p>
-          <span style={{ color: 'lightgray', fontWeight: 'normal', marginTop: '0', fontSize: 'clamp(1vw, 1.5vw, 1vw)'}}>Meters: {cellSize}</span>
+          <span
+            style={{
+              color: 'lightgray',
+              fontWeight: 'normal',
+              fontSize: 'clamp(12px, 1vw, 16px)'
+            }}
+          >
+            Meters: {cellSize}
+          </span>
           <input
             type="range"
             min={110}
@@ -196,7 +257,7 @@ export default function App({
             value={cellSize}
             onChange={e => setCellSize(Number(e.target.value))}
             style={{
-              width: '15vw',
+              width: 'clamp(160px, 15vw, 320px)',
               marginTop: '0vw',
               marginLeft: '0.5vw',
               marginBottom: '2vw',
@@ -205,19 +266,34 @@ export default function App({
               borderRadius: '0.5vw',
               background: 'rgba(255, 255, 255, 0.3)',
               outline: 'none',
-              cursor: 'pointer',
+              cursor: 'pointer'
             }}
-            className="custom-slider"
           />
         </label>
-        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'normal', fontSize: 'clamp(1vw, 1.5vw, 1.2vw)', color: 'lightgray', marginTop: '0vw'}}>
+        <p
+          style={{
+            fontFamily: 'Open Sans, sans-serif',
+            fontWeight: 'normal',
+            fontSize: 'clamp(12px, 1.2vw, 18px)',
+            color: 'lightgray',
+            marginTop: '0vw'
+          }}
+        >
           Number of buildings destroyed per municipality
         </p>
-        <div style={{ marginTop: '0vw', marginBottom: "-1vw" }}>
-          <Graph hoveredMuni={hoveredMuni} onHoverMuni={setHoveredMuni} />
+        <div style={{ marginTop: '0vw', marginBottom: '-1vw' }}>
+          <Graph hoveredMuni={hoverInfo.name} onHoverMuni={name => setHoverInfo({ ...hoverInfo, name })} />
         </div>
-        <p style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 'light', fontSize: 'clamp(0.8vw, 1vw, 0.5vw)', color: 'lightgray' , marginTop: '1vw'}}>
-          Source : UNOSAT
+        <p
+          style={{
+            fontFamily: 'Open Sans, sans-serif',
+            fontWeight: 'light',
+            fontSize: 'clamp(10px, 0.9vw, 14px)',
+            color: 'lightgray',
+            marginTop: '1vw'
+          }}
+        >
+          Source : UNOSAT, last updated in July 2025
         </p>
       </div>
 
