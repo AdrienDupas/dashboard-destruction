@@ -207,6 +207,7 @@ export default function App({
           overflowY: 'auto'
         }}
       >
+        
         <p
           style={{
             fontFamily: 'Open Sans, sans-serif',
@@ -295,7 +296,12 @@ export default function App({
         >
           Source : UNOSAT, last updated in July 2025
         </p>
+      
       </div>
+      
+      <div style={{ position: 'absolute', top: 10, right: 10, 
+        backgroundColor: "rgba(15, 15, 15, 0.9)", padding: '10px', borderRadius: '8px', boxShadow: '0 2px 6px rgba(0,0,0,0.3)', zIndex: 1000, pointerEvents: 'auto' }}> <img src="/north.svg" alt="North Arrow" style={{ display: "block", width: "100%", height: "auto" }} /> </div>
+     
 
       {/* MiniMap */}
       <div style={minimapStyle}>
