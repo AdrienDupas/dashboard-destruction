@@ -13,7 +13,7 @@ const MUNI_URL = '/muni.geojson';
 
 const INITIAL_VIEW_STATE: { main: MapViewState; minimap: MapViewState } = {
   main: { longitude: 34.34, latitude: 31.35, zoom: 10.5, maxZoom: 20, pitch: 0, bearing: -50 },
-  minimap: { longitude: 34.47, latitude: 31.4, zoom: 5 }
+  minimap: { longitude: 34.47, latitude: 31.4, zoom: 3 }
 };
 
 export const BANDS: ContourLayerProps['contours'] = [
