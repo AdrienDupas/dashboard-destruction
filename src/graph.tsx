@@ -21,7 +21,7 @@ const data: DataPoint[] = [
   { NAME: 'Deir al Balah', NUMPOINTS: 3491 },
   { NAME: 'Al Musaddar', NUMPOINTS: 404 },
   { NAME: 'Khan Yunis', NUMPOINTS: 28799 },
-  { NAME: 'Al Qaraya al Badawiya', NUMPOINTS: 716 },
+  { NAME: 'Al Qaraya', NUMPOINTS: 716 },
   { NAME: 'Beit Hanoun', NUMPOINTS: 6270 },
   { NAME: 'Jabalya', NUMPOINTS: 18330 },
   { NAME: 'Gaza', NUMPOINTS: 41103 },
@@ -51,11 +51,11 @@ export default function Graph({ onHoverMuni, hoveredMuni }: GraphProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={370}>
       <BarChart
         data={sortedData}
         layout="vertical"
-        margin={{ top: 20, right: 30, left: -10, bottom: 10 }}
+        margin={{ top: 0, right: 30, left: -40, bottom: 10 }} // laisse de la place pour les labels
         onMouseMove={(e: any) => {
           if (e && e.activeLabel) {
             const index = sortedData.findIndex(d => d.NAME === e.activeLabel);
@@ -69,13 +69,26 @@ export default function Graph({ onHoverMuni, hoveredMuni }: GraphProps) {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2dff" />
-        <XAxis type="number" tick={{ fill: '#ddd' }} />
-        <YAxis dataKey="NAME" type="category" width={150} tick={{ fill: '#ddd' }} interval={1} />
+        <XAxis type="number" tick={{ fill: '#c0c0c0ff', fontSize: 12 }} />
+        <YAxis
+          dataKey="NAME"
+          type="category"
+          width={150} // largeur pour les labels
+          interval={0} // affiche tous les labels
+          tick={{ fill: '#b7b7b7ff', fontSize: 12, textAnchor: 'end' }} // alignement à droite
+        />
         <Tooltip
           content={({ active, payload, label }) => {
             if (active && payload && payload.length) {
               return (
-                <div style={{ backgroundColor: '#222', padding: '8px', borderRadius: '4px', color: '#fff' }}>
+                <div
+                  style={{
+                    backgroundColor: '#222',
+                    padding: '8px',
+                    borderRadius: '1px',
+                    color: '#fff',
+                  }}
+                >
                   <div><b>{label}</b></div>
                   <div>Number of buildings destroyed: {payload[0].value}</div>
                 </div>
@@ -86,15 +99,21 @@ export default function Graph({ onHoverMuni, hoveredMuni }: GraphProps) {
         />
         <Bar
           dataKey="NUMPOINTS"
-          radius={[0, 5, 5, 0]}
+          radius={[0, 3, 3, 0]}
           animationDuration={3000}
         >
           {sortedData.map((entry, index) => {
-            const isHovered = activeIndex === index || hoveredMuni?.toLowerCase() === entry.NAME.toLowerCase();
+            const isHovered =
+              activeIndex === index ||
+              hoveredMuni?.toLowerCase() === entry.NAME.toLowerCase();
             return (
               <Cell
                 key={`cell-${entry.NAME}-${index}`}
-                fill={isHovered ? 'rgba(232, 171, 171, 0.87)' : 'rgba(184, 56, 30, 0.7)'}
+                fill={
+                  isHovered
+                    ? 'rgba(232, 171, 171, 0.87)'
+                    : 'rgba(184, 56, 30, 0.7)'
+                }
               />
             );
           })}

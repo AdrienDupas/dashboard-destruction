@@ -8,28 +8,32 @@ import type { ContourLayerProps } from '@deck.gl/aggregation-layers';
 import type { MapViewState } from '@deck.gl/core';
 import Graph from './graph';
 
-const DATA_URL = '/bombing.geojson';
+// 🟢 Nouveaux imports MUI
+import { Box, Typography, Slider } from '@mui/material';
+import { Padding } from 'maplibre-gl';
+
+const DATA_URL = '/bombing2.geojson';
 const MUNI_URL = '/muni.geojson';
 
 const INITIAL_VIEW_STATE: { main: MapViewState; minimap: MapViewState } = {
   main: { longitude: 34.34, latitude: 31.35, zoom: 10.5, maxZoom: 20, pitch: 0, bearing: -50 },
-  minimap: { longitude: 34.47, latitude: 31.4, zoom: 3 }
+  minimap: { longitude: 34.47, latitude: 31.4, zoom: 4.5 }
 };
 
 export const BANDS: ContourLayerProps['contours'] = [
-  { threshold: [1, 3], color: [255, 255, 178] },
-  { threshold: [3, 7], color: [254, 204, 92] },
-  { threshold: [7, 13], color: [253, 141, 60] },
-  { threshold: [13, 21], color: [240, 59, 32] },
-  { threshold: [21, 5000], color: [189, 0, 38] }
+  { threshold: [1, 200], color: [226, 255, 178] },
+  { threshold: [200, 700], color: [254, 204, 92] },
+  { threshold: [700, 1300], color: [253, 141, 60] },
+  { threshold: [1300, 2100], color: [240, 59, 32] },
+  { threshold: [2100, 50000], color: [189, 0, 38] }
 ];
 
 export const LINES: ContourLayerProps['contours'] = [
-  { threshold: 3, color: [254, 204, 92], strokeWidth: 2 },
-  { threshold: 7, color: [253, 141, 60], strokeWidth: 2 },
-  { threshold: 13, color: [240, 59, 32], strokeWidth: 2 },
-  { threshold: 21, color: [189, 0, 38], strokeWidth: 2 },
-  { threshold: 50, color: [189, 0, 38], strokeWidth: 2 }
+  { threshold: 200, color: [254, 204, 92], strokeWidth: 2 },
+  { threshold: 700, color: [253, 141, 60], strokeWidth: 2 },
+  { threshold: 1300, color: [240, 59, 32], strokeWidth: 2 },
+  { threshold: 2100, color: [189, 0, 38], strokeWidth: 2 },
+  { threshold: 5000, color: [189, 0, 38], strokeWidth: 2 }
 ];
 
 export default function App({
@@ -156,9 +160,9 @@ export default function App({
     right: '2%',
     width: 'clamp(180px, 15vw, 320px)',
     height: 'clamp(180px, 15vw, 320px)',
-    borderRadius: 'clamp(6px,1vw,18px)',
+    borderRadius: 'clamp(0px,0vw,0px)',
     overflow: 'hidden',
-    boxShadow: '0 0 1vw 0.2vw rgba(0,0,0,0.15)',
+    boxShadow: '0 0 2vw 0.3vw rgba(0, 0, 0, 0.35)',
     zIndex: 1000
   };
 
@@ -196,22 +200,25 @@ export default function App({
           position: 'absolute',
           top: '1vw',
           left: '1vw',
-          backgroundColor: 'rgba(15, 15, 15, 0.85)',
-          padding: 'clamp(8px,1vw,24px)',
-          borderRadius: 'clamp(6px,1vw,18px)',
+          bottom: '1vw',
+         
+          backgroundColor: 'rgba(20, 20, 20, 1)',
+          padding: 'clamp(24px,0.1vw,24px)',
+          borderRadius: 'clamp(0px,0vw,0px)',
           boxShadow: '0 0.2vw 0.6vw rgba(0,0,0,0.3)',
           zIndex: 1000,
           pointerEvents: 'auto',
           width: 'clamp(260px, 22vw, 480px)',
-          maxHeight: '90vh',
-          overflowY: 'auto'
+          maxHeight: 'calc(100vh - 3vw)', // hauteur max dynamique
+          
+          
         }}
       >
-        
         <p
           style={{
             fontFamily: 'Open Sans, sans-serif',
             fontWeight: 'bold',
+            marginTop: '0vw',
             fontSize: 'clamp(14px, 1.5vw, 24px)',
             color: 'lightgray'
           }}
@@ -241,36 +248,53 @@ export default function App({
           >
             Change the size of the density cells
           </p>
-          <span
-            style={{
+        </label>
+
+        {/* 🟢 Nouveau slider MUI */}
+        <Box
+          sx={{
+            mt: 0,
+            width: 'clamp(160px, 12vw, 320px)',
+            mb: 2,
+            p: 1,
+            borderRadius: 0,
+            backgroundColor: 'rgba(255,255,255,0.00)'
+          }}
+        >
+          <Typography
+            sx={{
               color: 'lightgray',
               fontWeight: 'normal',
-              fontSize: 'clamp(12px, 1vw, 16px)'
+              fontSize: 'clamp(12px, 1vw, 16px)',
+              mb: 1
             }}
           >
             Meters: {cellSize}
-          </span>
-          <input
-            type="range"
+          </Typography>
+
+          <Slider
             min={110}
             max={300}
             step={10}
             value={cellSize}
-            onChange={e => setCellSize(Number(e.target.value))}
-            style={{
-              width: 'clamp(160px, 15vw, 320px)',
-              marginTop: '0vw',
-              marginLeft: '0.5vw',
-              marginBottom: '2vw',
-              WebkitAppearance: 'none',
-              height: '0.8vw',
-              borderRadius: '0.5vw',
-              background: 'rgba(255, 255, 255, 0.3)',
-              outline: 'none',
-              cursor: 'pointer'
+            onChange={(_, newValue) => setCellSize(newValue as number)}
+            valueLabelDisplay="auto"
+            sx={{
+              color: 'lightgray',
+              '& .MuiSlider-valueLabel': {
+                backgroundColor: 'rgba(56, 56, 56, 1)',          // 🎯 Fond rouge du tooltip
+                color: '#959595ff'                                // texte blanc pour le contraste
+              },
+              '& .MuiSlider-thumb': {
+                backgroundColor: 'rgba(189, 189, 189, 1)', // thumb rouge au repos
+                '&:hover, &.Mui-focusVisible, &.Mui-active': {
+                  boxShadow: '0 0 0 8px rgba(255, 255, 255, 0.16)' // halo rouge sur hover/focus/active
+                }
+              }
             }}
           />
-        </label>
+        </Box>
+
         <p
           style={{
             fontFamily: 'Open Sans, sans-serif',
@@ -296,12 +320,23 @@ export default function App({
         >
           Source : UNOSAT, last updated in July 2025
         </p>
-      
       </div>
-      
-      <div style={{ position: 'absolute', top: 10, right: 10, 
-        backgroundColor: "rgba(15, 15, 15, 0.9)", padding: '10px', borderRadius: '8px', boxShadow: '0 2px 6px rgba(0,0,0,0.3)', zIndex: 1000, pointerEvents: 'auto' }}> <img src="/north.svg" alt="North Arrow" style={{ display: "block", width: "4vh", height: "auto" }} /> </div>
-     
+
+      <div
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          backgroundColor: 'rgba(15, 15, 15, 0.9)',
+          padding: '10px',
+          borderRadius: '2px',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+          zIndex: 1000,
+          pointerEvents: 'auto'
+        }}
+      >
+        <img src="/north.svg" alt="North Arrow" style={{ display: 'block', width: '4vh', height: 'auto' }} />
+      </div>
 
       {/* MiniMap */}
       <div style={minimapStyle}>

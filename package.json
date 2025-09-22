@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@deck.gl/react": "^9.1.14",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.2",
     "deck.gl": "^9.1.14",
     "maplibre-gl": "^5.7.1",
     "react": "^19.1.1",
